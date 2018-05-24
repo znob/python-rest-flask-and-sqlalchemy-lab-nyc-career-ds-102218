@@ -1,5 +1,7 @@
 tags:
-  - undefined
+  - jupyter
+  - python
 languages:
-  - undefined
+  - python
 resources: 0
+jupyter_notebook: true

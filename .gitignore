@@ -31,3 +31,8 @@ jspm_packages
 
 # Learn-specific .results.json
 .results.json
+
+*.ipynb_checkpoints
+.DS_Store
+__pycache__
+*.db
