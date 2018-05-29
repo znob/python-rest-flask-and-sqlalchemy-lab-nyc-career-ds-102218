@@ -48,24 +48,60 @@ We'll see that our models are already provided for us. In order to successfully 
 If you look at the seed.py file, we see that we have some data already provided for us and the `db.create_all()` function is being called there before we try to create any information in our database. Run this file by writing 
 `python seed.py` in your terminal.
 
-And that's it! Now all we need to do is go back to our `app.py` file and create our routes. We'll be using the seed data we just created to return in our functions.
+> **Note:** Since flask_sqlalchemy contains the session object for our application, we reference it by calling `session` on our `db` object like so: `db.session`. Similarly, when we want to add our newly created objects to our database, we call `db.session.add()` and commit the new objects by calling `db.session.commit()`. This pattern continues to our definition of models and table columns as we can see. In our class definitions for our Tweet & User model, we give the argument of `db.Model` and adding columns is done by calling `db.Column()`. Finally defining the datatype for a column is also done by calling `db.Integer`, `db.String`, or more generally `db.[data_type]` and providing the desired datatype.
+
+```pyhon
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), nullable=False)
+    tweets = db.relationship('Tweet', backref='users', lazy=True)
+```
+
+
+And that's it! Now we need go back to our `app.py` file and create our routes. We'll be using the seed data we just created to return as JSON in our routes.
+
+## Querying Our Database in a Flask-SQLAlchemy App
+
+As we just learned in the note above, our flask_sql alchemy wraps up a lot of the more manual functionality we are used to in a plain SQL Alchemy set-up. So, while we would typically query our database through our session object like so:
+
+```python
+# get all users from the database
+session.query(User).all()
+```
+
+We now have **two** options. We can stick to this format and just prepend our `db` object:
+```python
+# get all users from the database
+db.session.query(User).all()
+```
+
+**OR**
+
+We can now call the query object directly on the class itself:
+```python
+# get all users from the database
+User.query.all()
+```
+
+The last query seems to be the easiest to read and adds a great deal more clarity. Let's try using that to make our queries to the database!
 
 ## Defining RESTful Routes for User Data
 
- The routes we want to query our User table should follow REST convention and return:
+ Our User resourse routes should follow REST convention and query our User table to return:
     * A list of all user objects
-    * A single user object by their `id`
-    * A list of users with a matching `name`
+    * A single user object whose `id` matches the id in the URL
+    * A list of users with a whose `username` contains the string in the URL
 
 ## Defining RESTful Routes for Tweet Data
 
-The routes we want to query our Tweet table should follow REST convention and return:    
+Our Tweet resource routes should follow REST convention and query our Tweet table to return:
     * A list of all tweet objects
-    * A single tweet object by its `id`
+    * A single tweet object that has the same `id` as the id in the URL
 
 ## BONUS:
 
-## Defining RESTful Routes that Query a Relationship
+## Defining Nested RESTful Routes that Query a Relationship
 
 Since we are dealing with a has many / belongs to relationship we will want to define routes that return data that shows these relationships. We will want routes that, again follow the REST convention and return data for:
     * Tweets that belong to a user by `user_id`
