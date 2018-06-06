@@ -2,15 +2,10 @@
 from flask import Flask, jsonify
 # import SQLAlchemy from flask_sqlalchemy
 
-
 # initialize new flask app
-app = Flask(__name__)
 # add configurations and database URI
 
-
 # connect flask_sqlalchemy to the configured flask app
-
-
 
 # create models for application
 class User(db.Model):
